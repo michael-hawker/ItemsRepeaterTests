@@ -24,13 +24,24 @@ namespace ItemsRepeaterTest
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public ObservableGroupedCollection<string, Contact> ContactList
+        {
+            get { return (ObservableGroupedCollection<string, Contact>)GetValue(ContactListProperty); }
+            set { SetValue(ContactListProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ContactList.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ContactListProperty =
+            DependencyProperty.Register(nameof(ContactList), typeof(ObservableGroupedCollection<string, Contact>), typeof(MainPage), new PropertyMetadata(null));
+
         public MainPage()
         {
             this.InitializeComponent();
 
             _ = Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
             {
-                ContactsCVS.Source = new ObservableGroupedCollection<string, Contact>((await Contact.GetContactsAsync()).GroupBy(contact => contact.LastName.Substring(0, 1).ToUpper()).OrderBy(g => g.Key));
+                ContactList = new ObservableGroupedCollection<string, Contact>((await Contact.GetContactsAsync()).GroupBy(contact => contact.LastName.Substring(0, 1).ToUpper()).OrderBy(g => g.Key));
+                ContactsCVS.Source = ContactList;
             });
         }
     }

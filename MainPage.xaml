@@ -42,19 +42,19 @@
 
         <!-- xmlns:muxc="using:Microsoft.UI.Xaml.Controls" -->
         <ScrollViewer Grid.Column="1">
-            <muxc:ItemsRepeater ItemsSource="{x:Bind ContactsCVS.View.CollectionGroups, Mode=OneWay}"
+            <muxc:ItemsRepeater ItemsSource="{x:Bind ContactList, Mode=OneWay}"
                       Background="LightGreen">
                 <muxc:ItemsRepeater.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="12,0">
-                            <TextBlock Text="{Binding Group.Key}" 
+                            <TextBlock Text="{Binding Key}" 
                                        FontFamily="Segoe UI"
                                        FontSize="16"/>
                             <ScrollViewer HorizontalScrollMode="Enabled"
                                           VerticalScrollMode="Disabled"
                                           HorizontalScrollBarVisibility="Auto" >
                                 <muxc:ItemsRepeater 
-                                    ItemsSource="{Binding Group}"
+                                    ItemsSource="{Binding}"
                                     ItemTemplate="{StaticResource ContactItemTemplate}">
                                     <muxc:ItemsRepeater.Layout>
                                         <muxc:StackLayout/>
