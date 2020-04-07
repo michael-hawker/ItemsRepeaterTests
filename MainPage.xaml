@@ -4,16 +4,29 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ItemsRepeaterTest"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
         <CollectionViewSource x:Name="ContactsCVS" IsSourceGrouped="True"/>
+
+        <DataTemplate x:DataType="local:Contact" x:Key="ContactItemTemplate">
+            <StackPanel>
+                <TextBlock Text="{x:Bind Name}" Style="{StaticResource BaseTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind Company}" Style="{StaticResource CaptionTextBlockStyle}"/>
+            </StackPanel>
+        </DataTemplate>
     </Page.Resources>
 
     <Grid>
-        <ListView ItemsSource="{x:Bind ContactsCVS.View, Mode=OneWay}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ListView ItemsSource="{x:Bind ContactsCVS.View, Mode=OneWay}"
+                  ItemTemplate="{StaticResource ContactItemTemplate}">
             <ListView.GroupStyle>
                 <GroupStyle HidesIfEmpty="True">
                     <GroupStyle.HeaderTemplate>
@@ -25,14 +38,33 @@
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
             </ListView.GroupStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:Contact">
-                    <StackPanel>
-                        <TextBlock Text="{x:Bind Name}" Style="{StaticResource BaseTextBlockStyle}"/>
-                        <TextBlock Text="{x:Bind Company}" Style="{StaticResource CaptionTextBlockStyle}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
         </ListView>
+
+        <!-- xmlns:muxc="using:Microsoft.UI.Xaml.Controls" -->
+        <ScrollViewer Grid.Column="1">
+            <muxc:ItemsRepeater ItemsSource="{x:Bind ContactsCVS.View.CollectionGroups, Mode=OneWay}"
+                      Background="LightGreen">
+                <muxc:ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="12,0">
+                            <TextBlock Text="{Binding Group.Key}" 
+                                       FontFamily="Segoe UI"
+                                       FontSize="16"/>
+                            <ScrollViewer HorizontalScrollMode="Enabled"
+                                          VerticalScrollMode="Disabled"
+                                          HorizontalScrollBarVisibility="Auto" >
+                                <muxc:ItemsRepeater 
+                                    ItemsSource="{Binding Group}"
+                                    ItemTemplate="{StaticResource ContactItemTemplate}">
+                                    <muxc:ItemsRepeater.Layout>
+                                        <muxc:StackLayout/>
+                                    </muxc:ItemsRepeater.Layout>
+                                </muxc:ItemsRepeater>
+                            </ScrollViewer>
+                        </StackPanel>
+                    </DataTemplate>
+                </muxc:ItemsRepeater.ItemTemplate>
+            </muxc:ItemsRepeater>
+        </ScrollViewer>
     </Grid>
 </Page>
