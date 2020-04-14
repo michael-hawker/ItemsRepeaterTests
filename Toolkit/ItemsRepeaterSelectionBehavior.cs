@@ -1,5 +1,7 @@
 ﻿using Microsoft.Toolkit.Uwp.UI.Behaviors;
+using Microsoft.Toolkit.Uwp.UI.Extensions;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Xaml.Interactivity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +14,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
     public class ItemsRepeaterSelectionBehavior : BehaviorBase<ItemsRepeater>
     {
         #pragma warning disable CS8305 // Type is for evaluation purposes only and is subject to change or removal in future updates.
-        private SelectionModel selectionModel;
+        private SelectionModel _selectionModel;
+        private bool _selectionChanging = false;
         private long? _token = null;
+        private IndexPath _previousSelection;
 
         public bool SingleSelect { get; set; }
 
@@ -29,7 +33,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
 
         // Using a DependencyProperty as the backing store for IsSelected.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsSelectedProperty =
-            DependencyProperty.RegisterAttached("IsSelected", typeof(bool), typeof(ItemsRepeaterSelectionBehavior), new PropertyMetadata(false));
+            DependencyProperty.RegisterAttached("IsSelected", typeof(bool), typeof(ItemsRepeaterSelectionBehavior), new PropertyMetadata(false, IsSelected_PropertyChanged));
 
         protected override void OnAttached()
         {
@@ -37,11 +41,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
 
             base.OnAttached();
 
-            selectionModel = new SelectionModel(); // TODO: Expose
-            selectionModel.Source = AssociatedObject.ItemsSource;
-            selectionModel.SingleSelect = this.SingleSelect;
+            _selectionModel = new SelectionModel(); // TODO: Expose
+            _selectionModel.Source = AssociatedObject.ItemsSource;
+            _selectionModel.SingleSelect = this.SingleSelect;
 
-            selectionModel.SelectionChanged += SelectionModel_SelectionChanged;
+            _selectionModel.SelectionChanged += SelectionModel_SelectionChanged;
 
             _token = AssociatedObject.RegisterPropertyChangedCallback(ItemsRepeater.ItemsSourceProperty, ItemsRepeater_ItemsSourceChanged);
             AssociatedObject.ElementPrepared += AssociatedObject_ElementPrepared;
@@ -49,31 +53,79 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
 
         private void ItemsRepeater_ItemsSourceChanged(DependencyObject sender, DependencyProperty dp)
         {
-            selectionModel.Source = AssociatedObject.ItemsSource;
+            _selectionModel.Source = AssociatedObject.ItemsSource;
 
-            selectionModel.ClearSelection();
+            _selectionModel.ClearSelection();
+        }
 
-            selectionModel.Select(2); // Test
+        private static void IsSelected_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is FrameworkElement element)
+            {
+                // Find our behavior
+                var repeater = element.FindAscendant<ItemsRepeater>();
+                if (repeater == null)
+                {
+                    return;
+                }
+
+                var selectionBehavior = Interaction.GetBehaviors(repeater).FirstOrDefault(behavior => behavior.GetType() == typeof(ItemsRepeaterSelectionBehavior)) as ItemsRepeaterSelectionBehavior;
+                if (selectionBehavior == null || selectionBehavior._selectionChanging)
+                {
+                    return;
+                }
+
+                var index = repeater.GetElementIndex(d as UIElement);
+
+                // TODO: Multi-select
+                if (e.NewValue as bool? == true)
+                {
+                    selectionBehavior._selectionModel.Select(index);
+                }
+                else
+                {
+                    selectionBehavior._selectionModel.Deselect(index);
+                }
+            }
         }
 
         private void SelectionModel_SelectionChanged(SelectionModel sender, SelectionModelSelectionChangedEventArgs args)
         {
-            if (SingleSelect && selectionModel.SelectedItem != null)
+            _selectionChanging = true;
+            if (SingleSelect)
             {
-                var item = AssociatedObject.TryGetElement(selectionModel.SelectedIndex.GetAt(0));
-
-                if (item != null)
+                // If we had a previously selected item, we need to unselect it first.
+                if (_previousSelection != null)
                 {
-                    SetIsSelected(item, true);
+                    var item = AssociatedObject.TryGetElement(_previousSelection.GetAt(0));
+
+                    if (item != null)
+                    {
+                        SetIsSelected(item, false);
+                    }
                 }
+
+                // Select our new item
+                if (_selectionModel.SelectedItem != null)
+                {
+                    var item = AssociatedObject.TryGetElement(_selectionModel.SelectedIndex.GetAt(0));
+
+                    if (item != null)
+                    {
+                        SetIsSelected(item, true);
+                    }
+                }
+                
+                _previousSelection = _selectionModel.SelectedIndex;
             }
 
-            // TODO: Unselect on null???
+            _selectionChanging = false;
         }
 
         private void AssociatedObject_ElementPrepared(ItemsRepeater sender, ItemsRepeaterElementPreparedEventArgs args)
         {
-            if (SingleSelect && selectionModel.SelectedIndex.GetAt(0) == args.Index) // Single Selection, Non-Nested Case
+            _selectionChanging = true;
+            if (SingleSelect && _selectionModel.SelectedIndex.GetAt(0) == args.Index) // Single Selection, Non-Nested Case
             {
                 SetIsSelected(args.Element, true);
             }
@@ -81,6 +133,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
             {
                 SetIsSelected(args.Element, false);
             }
+            _selectionChanging = false;
         }
 
         protected override void OnDetaching()
@@ -100,10 +153,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
                 _token = null;
             }
 
-            if (selectionModel != null)
+            if (_selectionModel != null)
             {
-                selectionModel.SelectionChanged -= SelectionModel_SelectionChanged;
-                selectionModel = null;
+                _selectionModel.SelectionChanged -= SelectionModel_SelectionChanged;
+                _selectionModel = null;
             }
         }
         #pragma warning restore CS8305 // Type is for evaluation purposes only and is subject to change or removal in future updates.

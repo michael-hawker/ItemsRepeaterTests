@@ -18,10 +18,20 @@
         <converters:BoolToObjectConverter TrueValue="1" FalseValue="0" x:Key="BoolToThicknessConverter"/>
 
         <DataTemplate x:DataType="local:Contact" x:Key="ContactItemTemplate">
-            <StackPanel Margin="8,0,0,4" BorderBrush="LightBlue" BorderThickness="{Binding (layout:ItemsRepeaterSelectionBehavior.IsSelected),Converter={StaticResource BoolToThicknessConverter},RelativeSource={RelativeSource Self}}" CornerRadius="4">
+            <Grid x:Name="ItemLayoutRoot" Margin="8,0,0,4" BorderBrush="LightBlue" BorderThickness="{Binding (layout:ItemsRepeaterSelectionBehavior.IsSelected),Converter={StaticResource BoolToThicknessConverter},RelativeSource={RelativeSource Self}}" CornerRadius="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
                 <TextBlock Text="{x:Bind Name}" Style="{StaticResource BaseTextBlockStyle}"/>
-                <TextBlock Text="{x:Bind Company}" Style="{StaticResource CaptionTextBlockStyle}"/>
-            </StackPanel>
+                <TextBlock Text="{x:Bind Company}" Style="{StaticResource CaptionTextBlockStyle}" Grid.Row="1"/>
+                <CheckBox Grid.RowSpan="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"
+                          IsChecked="{Binding (layout:ItemsRepeaterSelectionBehavior.IsSelected),ElementName=ItemLayoutRoot,Mode=TwoWay}"/>
+            </Grid>
         </DataTemplate>
     </Page.Resources>
 
