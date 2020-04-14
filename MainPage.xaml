@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     xmlns:layout="using:Microsoft.Toolkit.Uwp.UI.Controls.Layout" 
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d"
@@ -14,8 +15,10 @@
     <Page.Resources>
         <CollectionViewSource x:Name="ContactsCVS" IsSourceGrouped="True"/>
 
+        <converters:BoolToObjectConverter TrueValue="1" FalseValue="0" x:Key="BoolToThicknessConverter"/>
+
         <DataTemplate x:DataType="local:Contact" x:Key="ContactItemTemplate">
-            <StackPanel Margin="8,0,0,4">
+            <StackPanel Margin="8,0,0,4" BorderBrush="LightBlue" BorderThickness="{Binding (layout:ItemsRepeaterSelectionBehavior.IsSelected),Converter={StaticResource BoolToThicknessConverter},RelativeSource={RelativeSource Self}}" CornerRadius="4">
                 <TextBlock Text="{x:Bind Name}" Style="{StaticResource BaseTextBlockStyle}"/>
                 <TextBlock Text="{x:Bind Company}" Style="{StaticResource CaptionTextBlockStyle}"/>
             </StackPanel>
@@ -43,9 +46,7 @@
         </ListView>-->
 
         <!-- xmlns:muxc="using:Microsoft.UI.Xaml.Controls" -->
-        <ScrollViewer HorizontalScrollMode="Enabled"
-                      VerticalScrollMode="Disabled"
-                      HorizontalScrollBarVisibility="Auto" >
+        <ScrollViewer>
             <muxc:ItemsRepeater 
                       ItemsSource="{x:Bind Contacts, Mode=OneWay}"
                       ItemTemplate="{StaticResource ContactItemTemplate}">
