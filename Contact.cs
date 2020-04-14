@@ -10,6 +10,9 @@ namespace ItemsRepeaterTest
 {
     public class Contact
     {
+        public static int _counter = 0;
+
+        public int Id { get; private set; }
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public string Company { get; private set; }
@@ -17,6 +20,7 @@ namespace ItemsRepeaterTest
 
         public Contact(string firstName, string lastName, string company)
         {
+            Id = _counter++;
             FirstName = firstName;
             LastName = lastName;
             Company = company;

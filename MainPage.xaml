@@ -5,18 +5,26 @@
     xmlns:local="using:ItemsRepeaterTest"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls" 
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
+        <converters:StringFormatConverter x:Key="StringFormatConverter"/>
+        
         <CollectionViewSource x:Name="ContactsCVS" IsSourceGrouped="True"/>
 
         <DataTemplate x:DataType="local:Contact" x:Key="ContactItemTemplate">
-            <StackPanel>
-                <TextBlock Text="{x:Bind Name}" Style="{StaticResource BaseTextBlockStyle}"/>
-                <TextBlock Text="{x:Bind Company}" Style="{StaticResource CaptionTextBlockStyle}"/>
-            </StackPanel>
+            <Grid>
+                <Image Source="{Binding Id, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://picsum.photos/id/{0}0/400/400'}" Stretch="UniformToFill"/>
+                <Border Background="#99FFFFFF" VerticalAlignment="Bottom">
+                    <StackPanel Margin="4">
+                        <TextBlock Text="{x:Bind Name}" Style="{StaticResource BaseTextBlockStyle}" Foreground="Black"/>
+                        <TextBlock Text="{x:Bind Company}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="DarkGray"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </DataTemplate>
     </Page.Resources>
 
@@ -57,7 +65,11 @@
                                     ItemsSource="{Binding}"
                                     ItemTemplate="{StaticResource ContactItemTemplate}">
                                     <muxc:ItemsRepeater.Layout>
-                                        <muxc:StackLayout/>
+                                        <muxc:UniformGridLayout Orientation="Horizontal" 
+                                                                MinItemWidth="200" MinItemHeight="200"
+                                                                MinRowSpacing="4" MinColumnSpacing="4"
+                                                                ItemsStretch="Uniform"
+                                                                />
                                     </muxc:ItemsRepeater.Layout>
                                 </muxc:ItemsRepeater>
                             </ScrollViewer>
