@@ -21,12 +21,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
 
         public bool SingleSelect { get; set; }
 
-        public static bool GetIsSelected(DependencyObject obj)
+        public static bool GetIsSelected(FrameworkElement obj)
         {
             return (bool)obj.GetValue(IsSelectedProperty);
         }
 
-        public static void SetIsSelected(DependencyObject obj, bool value)
+        public static void SetIsSelected(FrameworkElement obj, bool value)
         {
             obj.SetValue(IsSelectedProperty, value);
         }
@@ -97,7 +97,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
                 // If we had a previously selected item, we need to unselect it first.
                 if (_previousSelection != null)
                 {
-                    var item = AssociatedObject.TryGetElement(_previousSelection.GetAt(0));
+                    var item = AssociatedObject.TryGetElement(_previousSelection.GetAt(0)) as FrameworkElement;
 
                     if (item != null)
                     {
@@ -108,7 +108,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
                 // Select our new item
                 if (_selectionModel.SelectedItem != null)
                 {
-                    var item = AssociatedObject.TryGetElement(_selectionModel.SelectedIndex.GetAt(0));
+                    var item = AssociatedObject.TryGetElement(_selectionModel.SelectedIndex.GetAt(0)) as FrameworkElement;
 
                     if (item != null)
                     {
@@ -125,13 +125,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Layout
         private void AssociatedObject_ElementPrepared(ItemsRepeater sender, ItemsRepeaterElementPreparedEventArgs args)
         {
             _selectionChanging = true;
-            if (SingleSelect && _selectionModel.SelectedIndex.GetAt(0) == args.Index) // Single Selection, Non-Nested Case
+            if (SingleSelect && _selectionModel.SelectedIndex?.GetAt(0) == args.Index) // Single Selection, Non-Nested Case
             {
-                SetIsSelected(args.Element, true);
+                SetIsSelected(args.Element as FrameworkElement, true);
             }
             else
             {
-                SetIsSelected(args.Element, false);
+                SetIsSelected(args.Element as FrameworkElement, false);
             }
             _selectionChanging = false;
         }

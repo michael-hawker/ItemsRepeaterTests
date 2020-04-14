@@ -125,6 +125,7 @@
     </Compile>
     <Compile Include="Toolkit\IReadOnlyObservableGroup.cs" />
     <Compile Include="Toolkit\ItemsRepeaterSelectionBehavior.cs" />
+    <Compile Include="Toolkit\ItemsRepeaterToggleSelectionAction.cs" />
     <Compile Include="Toolkit\ObservableGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Toolkit\ObservableGroupedCollection.cs" />
