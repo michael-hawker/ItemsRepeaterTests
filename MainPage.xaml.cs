@@ -1,6 +1,7 @@
 ﻿using Microsoft.Toolkit.Collections;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -34,13 +35,25 @@ namespace ItemsRepeaterTest
         public static readonly DependencyProperty ContactListProperty =
             DependencyProperty.Register(nameof(ContactList), typeof(ObservableGroupedCollection<string, Contact>), typeof(MainPage), new PropertyMetadata(null));
 
+        public ObservableCollection<Contact> Contacts
+        {
+            get { return (ObservableCollection<Contact>)GetValue(ContactsProperty); }
+            set { SetValue(ContactsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Contacts.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ContactsProperty =
+            DependencyProperty.Register("Contacts", typeof(ObservableCollection<Contact>), typeof(MainPage), new PropertyMetadata(null));
+
         public MainPage()
         {
             this.InitializeComponent();
 
             _ = Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
             {
-                ContactList = new ObservableGroupedCollection<string, Contact>((await Contact.GetContactsAsync()).GroupBy(contact => contact.LastName.Substring(0, 1).ToUpper()).OrderBy(g => g.Key));
+                Contacts = await Contact.GetContactsAsync();
+
+                ContactList = new ObservableGroupedCollection<string, Contact>(Contacts.GroupBy(contact => contact.LastName.Substring(0, 1).ToUpper()).OrderBy(g => g.Key));
                 ContactsCVS.Source = ContactList;
             });
         }

@@ -6,6 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:layout="using:Microsoft.Toolkit.Uwp.UI.Controls.Layout" 
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -13,7 +15,7 @@
         <CollectionViewSource x:Name="ContactsCVS" IsSourceGrouped="True"/>
 
         <DataTemplate x:DataType="local:Contact" x:Key="ContactItemTemplate">
-            <StackPanel>
+            <StackPanel Margin="8,0,0,4">
                 <TextBlock Text="{x:Bind Name}" Style="{StaticResource BaseTextBlockStyle}"/>
                 <TextBlock Text="{x:Bind Company}" Style="{StaticResource CaptionTextBlockStyle}"/>
             </StackPanel>
@@ -23,9 +25,9 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition/>
+            <!--<ColumnDefinition/>-->
         </Grid.ColumnDefinitions>
-        <ListView ItemsSource="{x:Bind ContactsCVS.View, Mode=OneWay}"
+        <!--<ListView ItemsSource="{x:Bind ContactsCVS.View, Mode=OneWay}"
                   ItemTemplate="{StaticResource ContactItemTemplate}">
             <ListView.GroupStyle>
                 <GroupStyle HidesIfEmpty="True">
@@ -38,10 +40,24 @@
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
             </ListView.GroupStyle>
-        </ListView>
+        </ListView>-->
 
         <!-- xmlns:muxc="using:Microsoft.UI.Xaml.Controls" -->
-        <ScrollViewer Grid.Column="1">
+        <ScrollViewer HorizontalScrollMode="Enabled"
+                      VerticalScrollMode="Disabled"
+                      HorizontalScrollBarVisibility="Auto" >
+            <muxc:ItemsRepeater 
+                      ItemsSource="{x:Bind Contacts, Mode=OneWay}"
+                      ItemTemplate="{StaticResource ContactItemTemplate}">
+                <muxc:ItemsRepeater.Layout>
+                    <muxc:StackLayout/>
+                </muxc:ItemsRepeater.Layout>
+                <i:Interaction.Behaviors>
+                    <layout:ItemsRepeaterSelectionBehavior SingleSelect="True"/>
+                </i:Interaction.Behaviors>
+            </muxc:ItemsRepeater>
+        </ScrollViewer>
+        <!--<ScrollViewer Grid.Column="1">
             <muxc:ItemsRepeater ItemsSource="{x:Bind ContactList, Mode=OneWay}"
                       Background="LightGreen">
                 <muxc:ItemsRepeater.ItemTemplate>
@@ -59,12 +75,15 @@
                                     <muxc:ItemsRepeater.Layout>
                                         <muxc:StackLayout/>
                                     </muxc:ItemsRepeater.Layout>
+                                    <i:Interaction.Behaviors>
+                                        <layout:ItemsRepeaterSelectionBehavior SingleSelect="True"/>
+                                    </i:Interaction.Behaviors>
                                 </muxc:ItemsRepeater>
                             </ScrollViewer>
                         </StackPanel>
                     </DataTemplate>
                 </muxc:ItemsRepeater.ItemTemplate>
             </muxc:ItemsRepeater>
-        </ScrollViewer>
+        </ScrollViewer>-->
     </Grid>
 </Page>
