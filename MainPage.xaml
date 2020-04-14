@@ -19,7 +19,7 @@
         <converters:BoolToObjectConverter TrueValue="1" FalseValue="0" x:Key="BoolToThicknessConverter"/>
 
         <DataTemplate x:DataType="local:Contact" x:Key="ContactItemTemplate">
-            <Grid x:Name="ItemLayoutRoot" Margin="8,0,0,4" BorderBrush="LightBlue" BorderThickness="{Binding (layout:ItemsRepeaterSelectionBehavior.IsSelected),Converter={StaticResource BoolToThicknessConverter},RelativeSource={RelativeSource Self}}" CornerRadius="4">
+            <Grid x:Name="ItemLayoutRoot" Padding="8,0,0,0" BorderBrush="LightBlue" BorderThickness="{Binding (layout:ItemsRepeaterSelectionBehavior.IsSelected),Converter={StaticResource BoolToThicknessConverter},RelativeSource={RelativeSource Self}}" CornerRadius="4">
                 <i:Interaction.Behaviors>
                     <int:EventTriggerBehavior EventName="PointerPressed">
                         <layout:ItemsRepeaterToggleSelectionAction/>
@@ -69,7 +69,7 @@
                       ItemsSource="{x:Bind Contacts, Mode=OneWay}"
                       ItemTemplate="{StaticResource ContactItemTemplate}">
                 <muxc:ItemsRepeater.Layout>
-                    <muxc:StackLayout/>
+                    <muxc:StackLayout Spacing="8"/>
                 </muxc:ItemsRepeater.Layout>
                 <i:Interaction.Behaviors>
                     <layout:ItemsRepeaterSelectionBehavior SingleSelect="True"/>
