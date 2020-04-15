@@ -120,10 +120,12 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Contact.cs" />
+    <Compile Include="ContactTemplateSelector.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Toolkit\IReadOnlyObservableGroup.cs" />
+    <Compile Include="Toolkit\ItemsRepeaterCollectionInjectionBehavior.cs" />
     <Compile Include="Toolkit\ItemsRepeaterSelectionBehavior.cs" />
     <Compile Include="Toolkit\ItemsRepeaterToggleSelectionAction.cs" />
     <Compile Include="Toolkit\ObservableGroup.cs" />

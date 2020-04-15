@@ -18,7 +18,11 @@
 
         <converters:BoolToObjectConverter TrueValue="1" FalseValue="0" x:Key="BoolToThicknessConverter"/>
 
-        <DataTemplate x:DataType="local:Contact" x:Key="ContactItemTemplate">
+        <local:ContactTemplateSelector x:Key="ContactTemplateSelector"
+                                       ContactTemplate="{StaticResource ContactTemplate}"
+                                       OtherTemplate="{StaticResource GenericTemplate}"/>
+
+        <DataTemplate x:Key="ContactTemplate" x:DataType="local:Contact">
             <Grid x:Name="ItemLayoutRoot" Padding="8,0,0,0" BorderBrush="LightBlue" BorderThickness="{Binding (layout:ItemsRepeaterSelectionBehavior.IsSelected),Converter={StaticResource BoolToThicknessConverter},RelativeSource={RelativeSource Self}}" CornerRadius="4">
                 <i:Interaction.Behaviors>
                     <int:EventTriggerBehavior EventName="PointerPressed">
@@ -40,6 +44,10 @@
                 <CheckBox Grid.RowSpan="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"
                           IsChecked="{Binding (layout:ItemsRepeaterSelectionBehavior.IsSelected),ElementName=ItemLayoutRoot,Mode=TwoWay}"/>
             </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="GenericTemplate">
+            <ContentPresenter Content="{Binding}"/>
         </DataTemplate>
     </Page.Resources>
 
@@ -65,13 +73,19 @@
 
         <!-- xmlns:muxc="using:Microsoft.UI.Xaml.Controls" -->
         <ScrollViewer>
-            <muxc:ItemsRepeater 
-                      ItemsSource="{x:Bind Contacts, Mode=OneWay}"
-                      ItemTemplate="{StaticResource ContactItemTemplate}">
+            <muxc:ItemsRepeater ItemTemplate="{StaticResource ContactTemplateSelector}">
                 <muxc:ItemsRepeater.Layout>
                     <muxc:StackLayout Spacing="8"/>
                 </muxc:ItemsRepeater.Layout>
                 <i:Interaction.Behaviors>
+                    <layout:ItemsRepeaterCollectionInjectionBehavior ItemsSource="{x:Bind Contacts, Mode=OneWay}"
+                                                                     Index="3">
+                        <Grid x:Name="OurAd" BorderThickness="1" BorderBrush="White" Width="400" Height="100">
+                            <Image Source="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2553&amp;q=80"
+                    Stretch="UniformToFill"/>
+                            <TextBlock FontSize="24" VerticalAlignment="Center" Margin="16,0,0,0" FontStyle="Italic" Foreground="Blue">Join the Adventure!</TextBlock>
+                        </Grid>
+                    </layout:ItemsRepeaterCollectionInjectionBehavior>
                     <layout:ItemsRepeaterSelectionBehavior SingleSelect="True"/>
                 </i:Interaction.Behaviors>
             </muxc:ItemsRepeater>
